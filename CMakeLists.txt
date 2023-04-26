@@ -2,5 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 project(raycaster)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(raycaster.out raycaster/main.cpp)
+set(SOURCES raycaster/main.cpp)
+
+add_executable(raycaster.out ${SOURCES})
+target_link_libraries(raycaster.out -lsfml-graphics -lsfml-window -lsfml-system)
