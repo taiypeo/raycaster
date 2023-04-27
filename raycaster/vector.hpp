@@ -8,9 +8,13 @@ struct Vector
     double x, y;
 
     Vector(double x, double y);
+
     Vector &operator+=(const Vector &other);
     Vector &operator-=(const Vector &other);
     Vector &operator*=(double constant);
+
+    Vector rotate(double angle) const;
+    double norm() const;
 };
 
 Vector operator+(const Vector &vec1, const Vector &vec2);

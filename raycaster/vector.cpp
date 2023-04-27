@@ -1,3 +1,4 @@
+#include <cmath>
 #include <ostream>
 
 #include "vector.hpp"
@@ -23,6 +24,18 @@ Vector &Vector::operator*=(double constant)
     x *= constant;
     y *= constant;
     return *this;
+}
+
+Vector Vector::rotate(double angle) const
+{
+    double new_x = cos(angle) * x - sin(angle) * y;
+    double new_y = sin(angle) * x + cos(angle) * y;
+    return Vector(new_x, new_y);
+}
+
+double Vector::norm() const
+{
+    return sqrt(x * x + y * y);
 }
 
 Vector operator+(const Vector &vec1, const Vector &vec2)
