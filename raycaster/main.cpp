@@ -33,11 +33,9 @@ int main()
             {
                 window.close();
             }
-            else if (event.type == sf::Event::KeyPressed)
-            {
-                event_handler.handle(event.key.code);
-            }
         }
+
+        event_handler.handle();
 
         window.clear();
         window.draw(shape);

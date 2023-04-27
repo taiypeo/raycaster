@@ -1,3 +1,5 @@
+#include <SFML/Graphics.hpp>
+
 #include "eventhandler.hpp"
 
 EventHandler::EventHandler(const sf::RenderWindow &window) : window(window) {}
@@ -14,16 +16,24 @@ void EventHandler::subscribe(const ActionKey event, const std::function<void()> 
     }
 }
 
-void EventHandler::handle(const sf::Keyboard::Key key) const
+void EventHandler::handle() const
 {
-    const auto action_key = ActionKey(key);
-    if (subscribers.find(action_key) == subscribers.end())
+    for (const auto key : defined_keys)
     {
-        return;
-    }
+        if (!sf::Keyboard::isKeyPressed(key))
+        {
+            continue;
+        }
 
-    for (const auto callback : subscribers.at(action_key))
-    {
-        callback();
+        const auto action_key = ActionKey(key);
+        if (subscribers.find(action_key) == subscribers.end())
+        {
+            return;
+        }
+
+        for (const auto callback : subscribers.at(action_key))
+        {
+            callback();
+        }
     }
 }

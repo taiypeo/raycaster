@@ -15,6 +15,13 @@ enum ActionKey
     BACKWARD = sf::Keyboard::S,
 };
 
+const sf::Keyboard::Key defined_keys[] = {
+    sf::Keyboard::A,
+    sf::Keyboard::D,
+    sf::Keyboard::W,
+    sf::Keyboard::S,
+};
+
 class EventHandler
 {
 private:
@@ -24,7 +31,7 @@ private:
 public:
     EventHandler(const sf::RenderWindow &window);
     void subscribe(const ActionKey event, const std::function<void()> callback);
-    void handle(const sf::Keyboard::Key key) const;
+    void handle() const;
 };
 
 #endif
