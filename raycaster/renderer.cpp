@@ -102,7 +102,7 @@ void Renderer::render()
 
     for (int pixel = 0; pixel < window_width; ++pixel)
     {
-        const Vector pix_dir = camera.dir - camera.plane + static_cast<double>(pixel) / window_width * camera.plane;
+        const Vector pix_dir = camera.dir + (2 * static_cast<double>(pixel) / window_width - 1) * camera.plane;
         Vector cur_pos = camera.pos;
         int cell = 0;
         double dist = 0;
