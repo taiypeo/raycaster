@@ -53,6 +53,12 @@ bool Vector::is_orthogonal(const Vector &other) const
     return is_close(x * other.x + y * other.y, 0.);
 }
 
+double Vector::cos_angle(const Vector &other) const
+{
+    const double this_norm = norm(), other_norm = other.norm();
+    return std::abs((x * other.x + y * other.y) / (this_norm * other_norm));
+}
+
 Vector operator+(const Vector &vec1, const Vector &vec2)
 {
     Vector result(vec1);

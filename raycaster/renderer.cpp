@@ -69,6 +69,33 @@ bool move_to_wall(Vector &cur_pos, const Vector &pix_dir)
     return is_vertical;
 }
 
+int get_cell(const Vector &cur_pos, const Vector &pix_dir, bool is_vertical)
+{
+    int world_x = static_cast<int>(cur_pos.x), world_y = static_cast<int>(cur_pos.y);
+
+    if (is_vertical)
+    {
+        if (pix_dir.x < 0)
+        {
+            --world_x;
+        }
+    }
+    else
+    {
+        if (pix_dir.y < 0)
+        {
+            --world_y;
+        }
+    }
+
+    if (world_x < 0 || world_x >= WORLD_SIZE || world_y < 0 || world_y >= WORLD_SIZE)
+    {
+        return 0;
+    }
+
+    return WORLD[world_x][world_y];
+}
+
 void Renderer::render()
 {
     window.clear();
@@ -84,14 +111,7 @@ void Renderer::render()
         {
             is_vertical = move_to_wall(cur_pos, pix_dir);
             dist = (cur_pos - camera.pos).norm();
-
-            const int world_x = static_cast<int>(cur_pos.x), world_y = static_cast<int>(cur_pos.y);
-            if (world_x < 0 || world_x >= WORLD_SIZE || world_y < 0 || world_y >= WORLD_SIZE)
-            {
-                break;
-            }
-
-            cell = WORLD[static_cast<int>(cur_pos.x)][static_cast<int>(cur_pos.y)];
+            cell = get_cell(cur_pos, pix_dir, is_vertical);
             if (cell != 0)
             {
                 break;
@@ -103,7 +123,11 @@ void Renderer::render()
             continue;
         }
 
-        const double line_height = -window_height / max_dist * dist + window_height,
+        const double cos_angle = camera.plane.cos_angle(pix_dir),
+                     offset = cos_angle * dist,
+                     perp_dist = std::sqrt(dist * dist - offset * offset);
+
+        const double line_height = std::floor(window_height / perp_dist),
                      line_top = window_height / 2. - line_height / 2.,
                      line_bottom = window_height / 2. + line_height / 2.;
 

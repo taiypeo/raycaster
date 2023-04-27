@@ -17,6 +17,7 @@ struct Vector
     Vector &inplace_rotate(double angle);
     double norm() const;
     bool is_orthogonal(const Vector &other) const;
+    double cos_angle(const Vector &other) const;
 };
 
 Vector operator+(const Vector &vec1, const Vector &vec2);
