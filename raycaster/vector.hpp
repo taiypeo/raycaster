@@ -14,6 +14,7 @@ struct Vector
     Vector &operator*=(double constant);
 
     Vector rotate(double angle) const;
+    Vector &inplace_rotate(double angle);
     double norm() const;
     bool is_orthogonal(const Vector &other) const;
 };

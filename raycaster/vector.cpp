@@ -30,9 +30,18 @@ Vector &Vector::operator*=(double constant)
 
 Vector Vector::rotate(double angle) const
 {
+    Vector result(*this);
+    result.inplace_rotate(angle);
+    return result;
+}
+
+Vector &Vector::inplace_rotate(double angle)
+{
     double new_x = std::cos(angle) * x - std::sin(angle) * y;
     double new_y = std::sin(angle) * x + std::cos(angle) * y;
-    return Vector(new_x, new_y);
+    x = new_x;
+    y = new_y;
+    return *this;
 }
 
 double Vector::norm() const
