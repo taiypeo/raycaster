@@ -3,6 +3,7 @@
 
 #include "camera.hpp"
 #include "eventhandler.hpp"
+#include "utils.hpp"
 
 Camera::Camera(
     EventHandler &handler,
@@ -19,14 +20,19 @@ Camera::Camera(
         throw std::runtime_error("dir is not orthogonal to plane");
     }
 
+    if (is_close(dir.x, 0.) && is_close(dir.y, 0.))
+    {
+        throw std::runtime_error("dir cannot be a zero vector");
+    }
+
     handler.subscribe(
         ActionKey::FORWARD,
         [this, speed]()
-        { this->pos += Vector(0, speed); });
+        { this->pos += speed / this->dir.norm() * this->dir; });
     handler.subscribe(
         ActionKey::BACKWARD,
         [this, speed]()
-        { this->pos += Vector(0, -speed); });
+        { this->pos -= speed / this->dir.norm() * this->dir; });
     handler.subscribe(
         ActionKey::TURN_LEFT,
         [this, rot_speed]()

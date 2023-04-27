@@ -9,6 +9,7 @@
 struct Camera
 {
     Vector pos, dir, plane;
+    double speed, rot_speed;
 
     Camera(
         EventHandler &handler,

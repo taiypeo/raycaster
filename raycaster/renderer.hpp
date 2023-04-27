@@ -7,13 +7,16 @@
 
 #include "camera.hpp"
 
-constexpr std::array<std::array<int, 3>, 4> COLORS{
+constexpr std::array<std::array<int, 3>, 5> COLORS{
     {{0, 0, 0},
      {255, 0, 0},
      {0, 255, 0},
-     {0, 0, 255}}};
+     {0, 0, 255},
+     {0, 127, 127}}};
 
-constexpr std::array<std::array<int, 24>, 24> WORLD{
+constexpr int WORLD_SIZE = 24;
+
+constexpr std::array<std::array<int, WORLD_SIZE>, WORLD_SIZE> WORLD{
     {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},

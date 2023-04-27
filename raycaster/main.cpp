@@ -1,6 +1,5 @@
-#include <iostream>
-
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 #include "camera.hpp"
 #include "eventhandler.hpp"
@@ -9,12 +8,10 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(640, 480), "Raycaster");
+
     EventHandler event_handler(window);
-
-    Camera camera(event_handler, Vector(1.5, 3.5), Vector(1, 0), Vector(0, 1), 0.1, 0.1);
-    std::cout << camera << std::endl;
-
+    Camera camera(event_handler, Vector(22, 12), Vector(-1, 0), Vector(0, 0.66), 0.01, 0.001);
     Renderer renderer(window, camera, 100);
 
     while (window.isOpen())
@@ -30,6 +27,8 @@ int main()
 
         event_handler.handle();
         renderer.render();
+
+        std::cout << camera << std::endl;
     }
 
     return 0;

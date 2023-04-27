@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "camera.hpp"
 #include "renderer.hpp"
 #include "utils.hpp"
@@ -12,6 +14,61 @@ Renderer::Renderer(sf::RenderWindow &window, const Camera &camera, double max_di
     window_height = window_size.y;
 }
 
+double get_closest_wall_component(double pos_component, double dir_component)
+{
+    const double closest = std::floor(pos_component);
+    if (dir_component > 0)
+    {
+        return closest + 1;
+    }
+
+    if (is_close(pos_component, closest))
+    {
+        return closest - 1;
+    }
+
+    return closest;
+}
+
+bool move_to_wall(Vector &cur_pos, const Vector &pix_dir)
+{
+    const double closest_x = get_closest_wall_component(cur_pos.x, pix_dir.x),
+                 closest_y = get_closest_wall_component(cur_pos.y, pix_dir.y);
+
+    bool is_vertical;
+    if (is_close(pix_dir.x, 0.))
+    {
+        cur_pos.y = closest_y;
+        is_vertical = false;
+    }
+    else if (is_close(pix_dir.y, 0.))
+    {
+        cur_pos.x = closest_x;
+        is_vertical = true;
+    }
+    else
+    {
+        Vector delta_scaled_x(pix_dir), delta_scaled_y(pix_dir);
+        delta_scaled_x *= (closest_x - cur_pos.x) / pix_dir.x;
+        delta_scaled_y *= (closest_y - cur_pos.y) / pix_dir.y;
+
+        if (delta_scaled_x.norm() < delta_scaled_y.norm())
+        {
+            cur_pos.x = closest_x;
+            cur_pos.y += delta_scaled_x.y;
+            is_vertical = true;
+        }
+        else
+        {
+            cur_pos.x += delta_scaled_y.x;
+            cur_pos.y = closest_y;
+            is_vertical = false;
+        }
+    }
+
+    return is_vertical;
+}
+
 void Renderer::render()
 {
     window.clear();
@@ -22,42 +79,18 @@ void Renderer::render()
         Vector cur_pos = camera.pos;
         int cell = 0;
         double dist = 0;
+        bool is_vertical = false;
         while (dist < max_dist)
         {
-            int closest_x = static_cast<int>(cur_pos.x);
-            if (camera.dir.x > 0)
-            {
-                ++closest_x;
-            }
-            else if (camera.dir.x <= 0 && is_close(cur_pos.x, closest_x))
-            {
-                --closest_x;
-            }
-            int closest_y = static_cast<int>(cur_pos.y);
-            if (camera.dir.y > 0)
-            {
-                ++closest_y;
-            }
-            else if (camera.dir.y <= 0 && is_close(cur_pos.y, closest_y))
-            {
-                --closest_y;
-            }
-
-            Vector dir_x_scaled(pix_dir), dir_y_scaled(pix_dir);
-            dir_x_scaled *= (closest_x - cur_pos.x) / pix_dir.x;
-            dir_y_scaled *= (closest_y - cur_pos.y) / pix_dir.y;
-            if (dir_x_scaled.norm() < dir_y_scaled.norm())
-            {
-                cur_pos.x = closest_x;
-                cur_pos.y += dir_x_scaled.y;
-            }
-            else
-            {
-                cur_pos.x += dir_y_scaled.x;
-                cur_pos.y = closest_y;
-            }
-
+            is_vertical = move_to_wall(cur_pos, pix_dir);
             dist = (cur_pos - camera.pos).norm();
+
+            const int world_x = static_cast<int>(cur_pos.x), world_y = static_cast<int>(cur_pos.y);
+            if (world_x < 0 || world_x >= WORLD_SIZE || world_y < 0 || world_y >= WORLD_SIZE)
+            {
+                break;
+            }
+
             cell = WORLD[static_cast<int>(cur_pos.x)][static_cast<int>(cur_pos.y)];
             if (cell != 0)
             {
@@ -74,12 +107,16 @@ void Renderer::render()
                      line_top = window_height / 2. - line_height / 2.,
                      line_bottom = window_height / 2. + line_height / 2.;
 
+        const double color_scaling_factor = is_vertical ? 1 : 0.5;
         sf::Vertex line[] = {
             sf::Vertex(sf::Vector2f(pixel, line_top)),
             sf::Vertex(sf::Vector2f(pixel, line_bottom))};
         for (auto &v : line)
         {
-            v.color = sf::Color(COLORS[cell][0], COLORS[cell][1], COLORS[cell][2]);
+            v.color = sf::Color(
+                COLORS[cell][0] * color_scaling_factor,
+                COLORS[cell][1] * color_scaling_factor,
+                COLORS[cell][2] * color_scaling_factor);
         }
 
         window.draw(line, 2, sf::Lines);
