@@ -1,9 +1,8 @@
 #include <cmath>
 #include <ostream>
 
+#include "utils.hpp"
 #include "vector.hpp"
-
-constexpr double EPS = 1e-6;
 
 Vector::Vector(double x, double y) : x(x), y(y) {}
 
@@ -51,7 +50,7 @@ double Vector::norm() const
 
 bool Vector::is_orthogonal(const Vector &other) const
 {
-    return std::abs(x * other.x + y * other.y) < EPS;
+    return is_close(x * other.x + y * other.y, 0.);
 }
 
 Vector operator+(const Vector &vec1, const Vector &vec2)

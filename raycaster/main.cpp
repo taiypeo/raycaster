@@ -2,27 +2,20 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "camera.hpp"
 #include "eventhandler.hpp"
-
-void sample_w_subscriber()
-{
-    std::cout << "W pressed!" << std::endl;
-}
-
-void sample_d_subscriber()
-{
-    std::cout << "D pressed!" << std::endl;
-}
+#include "renderer.hpp"
+#include "vector.hpp"
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     EventHandler event_handler(window);
-    event_handler.subscribe(ActionKey::FORWARD, sample_w_subscriber);
-    event_handler.subscribe(ActionKey::TURN_RIGHT, sample_d_subscriber);
 
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    Camera camera(event_handler, Vector(1.5, 3.5), Vector(1, 0), Vector(0, 1), 0.1, 0.1);
+    std::cout << camera << std::endl;
+
+    Renderer renderer(window, camera, 100);
 
     while (window.isOpen())
     {
@@ -36,10 +29,7 @@ int main()
         }
 
         event_handler.handle();
-
-        window.clear();
-        window.draw(shape);
-        window.display();
+        renderer.render();
     }
 
     return 0;
