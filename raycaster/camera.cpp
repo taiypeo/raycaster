@@ -1,4 +1,4 @@
-#include <exception>
+#include <stdexcept>
 #include <ostream>
 
 #include "camera.hpp"
@@ -17,12 +17,12 @@ Camera::Camera(
 {
     if (!dir.is_orthogonal(plane))
     {
-        throw std::runtime_error("dir is not orthogonal to plane");
+        throw std::invalid_argument("dir is not orthogonal to plane");
     }
 
     if (is_close(dir.x, 0.) && is_close(dir.y, 0.))
     {
-        throw std::runtime_error("dir cannot be a zero vector");
+        throw std::invalid_argument("dir cannot be a zero vector");
     }
 
     handler.subscribe(

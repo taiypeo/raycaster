@@ -4,10 +4,16 @@
 #include "renderer.hpp"
 #include "utils.hpp"
 #include "vector.hpp"
+#include "world.hpp"
 
-Renderer::Renderer(sf::RenderWindow &window, const Camera &camera, double max_dist) : window(window),
-                                                                                      camera(camera),
-                                                                                      max_dist(max_dist)
+Renderer::Renderer(
+    sf::RenderWindow &window,
+    const Camera &camera,
+    double max_dist,
+    const World &world) : window(window),
+                          camera(camera),
+                          max_dist(max_dist),
+                          world(world)
 {
     const auto window_size = window.getSize();
     window_width = window_size.x;
@@ -69,7 +75,7 @@ bool move_to_wall(Vector &cur_pos, const Vector &pix_dir)
     return is_vertical;
 }
 
-int get_cell(const Vector &cur_pos, const Vector &pix_dir, bool is_vertical)
+int get_cell(const Vector &cur_pos, const Vector &pix_dir, bool is_vertical, const World &world)
 {
     int world_x = static_cast<int>(cur_pos.x), world_y = static_cast<int>(cur_pos.y);
 
@@ -88,12 +94,12 @@ int get_cell(const Vector &cur_pos, const Vector &pix_dir, bool is_vertical)
         }
     }
 
-    if (world_x < 0 || world_x >= WORLD_SIZE || world_y < 0 || world_y >= WORLD_SIZE)
+    if (world_x < 0 || world_x >= world.map[0].size() || world_y < 0 || world_y >= world.map.size())
     {
         return 0;
     }
 
-    return WORLD[world_x][world_y];
+    return world.map[world_x][world_y];
 }
 
 void Renderer::render()
@@ -111,14 +117,14 @@ void Renderer::render()
         {
             is_vertical = move_to_wall(cur_pos, pix_dir);
             dist = (cur_pos - camera.pos).norm();
-            cell = get_cell(cur_pos, pix_dir, is_vertical);
-            if (cell != 0)
+            cell = get_cell(cur_pos, pix_dir, is_vertical, world);
+            if (cell != MapValue::EMPTY)
             {
                 break;
             }
         }
 
-        if (cell == 0 || dist >= max_dist)
+        if (cell == MapValue::EMPTY || dist >= max_dist)
         {
             continue;
         }
@@ -138,9 +144,9 @@ void Renderer::render()
         for (auto &v : line)
         {
             v.color = sf::Color(
-                COLORS[cell][0] * color_scaling_factor,
-                COLORS[cell][1] * color_scaling_factor,
-                COLORS[cell][2] * color_scaling_factor);
+                world.colors[cell][0] * color_scaling_factor,
+                world.colors[cell][1] * color_scaling_factor,
+                world.colors[cell][2] * color_scaling_factor);
         }
 
         window.draw(line, 2, sf::Lines);
