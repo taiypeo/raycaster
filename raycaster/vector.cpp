@@ -3,6 +3,8 @@
 
 #include "vector.hpp"
 
+constexpr double EPS = 1e-6;
+
 Vector::Vector(double x, double y) : x(x), y(y) {}
 
 Vector &Vector::operator+=(const Vector &other)
@@ -28,14 +30,19 @@ Vector &Vector::operator*=(double constant)
 
 Vector Vector::rotate(double angle) const
 {
-    double new_x = cos(angle) * x - sin(angle) * y;
-    double new_y = sin(angle) * x + cos(angle) * y;
+    double new_x = std::cos(angle) * x - std::sin(angle) * y;
+    double new_y = std::sin(angle) * x + std::cos(angle) * y;
     return Vector(new_x, new_y);
 }
 
 double Vector::norm() const
 {
-    return sqrt(x * x + y * y);
+    return std::sqrt(x * x + y * y);
+}
+
+bool Vector::is_orthogonal(const Vector &other) const
+{
+    return std::abs(x * other.x + y * other.y) < EPS;
 }
 
 Vector operator+(const Vector &vec1, const Vector &vec2)

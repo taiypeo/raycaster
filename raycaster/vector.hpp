@@ -15,6 +15,7 @@ struct Vector
 
     Vector rotate(double angle) const;
     double norm() const;
+    bool is_orthogonal(const Vector &other) const;
 };
 
 Vector operator+(const Vector &vec1, const Vector &vec2);
